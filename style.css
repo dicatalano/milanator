@@ -1,0 +1,15 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #fafafa;
+  text-align: center;
+  padding: 20px;
+}
+
+#contenido {
+  margin-top: 20px;
+  padding: 20px;
+  border: 2px dashed #6c63ff;
+  border-radius: 10px;
+  display: inline-block;
+  background: white;
+}
