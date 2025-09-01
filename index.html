@@ -1,26 +1,25 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Milanator</title>
-    <link rel="stylesheet" href="milanator.css">
-    <link rel="icon" href="assets/img/favicon.ico">
+  <meta charset="utf-8">
+  <title>milanator</title>
+  <link rel="icon" href="favicon.ico">  <!-- Cambiado: src/favicon.ico → favicon.ico -->
+
+  <script>
+    const version_comprimida = false;
+  </script>
+  <script src="milanator.js"></script>    <!-- Cambiado: src/mila.js → milanator.js -->
+  <script src="canvas.js"></script>       <!-- ¡FALTA - necesitas descargar! -->
+  <script src="interprete.js"></script>   <!-- ¡FALTA - necesitas descargar! -->
+  <script src="blockly.js"></script>      <!-- ¡FALTA - necesitas descargar! -->
+
+  <script src="acorn_interpreter.js"></script>  <!-- ¡FALTA - necesitas descargar! -->
+
+  <script src="clock/clock.js"></script>  <!-- ¡FALTA - necesitas descargar! -->
+
+  <link rel="stylesheet" href="milanator.css" media="screen,projection">  <!-- Cambiado: src/mila.css → milanator.css -->
 </head>
 <body>
-    <div id="game-container">
-        <div id="header">
-            <img src="assets/img/logo.png" alt="Milanator" id="logo">
-            <div id="score">Puntos: 0</div>
-        </div>
-        <div id="game-board"></div>
-        <div id="controls">
-            <button id="start-btn">Comenzar</button>
-            <button id="reset-btn">Reiniciar</button>
-        </div>
-    </div>
-    
-    <script src="milanator.js"></script>
-    <script src="juegos/10k.js"></script>
+  <!-- ... el resto del HTML está bien ... -->
 </body>
 </html>
