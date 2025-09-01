@@ -1,0 +1,13 @@
+#blockly {            /* Zona de bloques (Blockly) */
+  border:1px solid;     /* Borde negro fino */
+  margin-top:0px;       /* Contra el borde superior */
+  margin-left:-3px;     /* Dejo un poco de espacio respecto al canvas */
+  margin-bottom:-10px;  /* Contra el borde inferior */
+}
+
+#canvas {             /* Área de juego (Canvas) */
+  border:1px solid;     /* Borde negro fino */
+  margin-top:0px;       /* Contra el borde superior */
+  margin-left:-10px;    /* Contra el borde izquierdo */
+  margin-bottom:-15px;  /* Contra el borde inferior */
+}

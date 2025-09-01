@@ -1,0 +1,118 @@
+2020-02-02:
+  Reemplazamos el generador de la repetición simple para que se iluminen los bloques internos en cada iteración
+    src/blockly/generadores.js : 45-75
+  Administramos varios intérpretes (uno por robot)
+  * Le agregamos el argumento "robot" a Juego.mover para que no mueva sólo al robot 0.
+    src/juegos/demo.js : 75
+    - Pendiente (1): Cambiarlo para que en lugar de moverlo efectivamente, sólo le asigne el estado "moviendo".
+        El movimiento efectivo debería hacerse en otra función que se llame una vez por pulso.
+          Esta función revisa el estado de cada robot y en función del mismo decide si moverlos o no y hacia dónde.
+    - Pendiente (2): Se tienen que iluminar varios bloques a la vez (usar el segundo argumento de highlight).
+  * Le agregamos el campo "rol" a los objetos que representan robots.
+    src/juegos/demo.js : 51-52
+  * Al compilar, en lugar de crear un intérprete con el robot[0], creamos uno por cada robot.
+    src/interprete.js : 47-49
+  * Al crear un nuevo intérprete (Interprete.nuevo), tomamos como primer argumento el robot y hacemos todo el código relativo a él.
+    src/interprete.js : 53-107
+    - Como ahora Juego.mover toma también un robot, le pasamos nuestro robot.
+    - Cambiamos la variable Interprete.retraso por una varible local a cada intérprete.
+      - Pendiente (3): Este retraso debería ser la cantidad de pulsos que le va a tomar al intérprete
+        ejecutar la función. Luego, (tras el pendiente 6) en cada pulso hay que restarle 1 a esta variable y,
+        si llegó a cero, ejecutar otro paso.
+    - En lugar de devolver una instancia de Interpreter, devolvemos un objeto que lo contiene, además de contener
+      la función de paso que antes estaba en Interprete.paso.
+      - Pendiente (4): Ver qué hacer en la línea 97 (creo que no hay que hacer nada porque la ejecución del próximo
+        paso depende del próximo pulso. Es más, creo que hay que borrar todo entre 93 y 98)
+  * La función Interprete.paso ahora sólo llama al paso de cada intérprete.
+    src/interprete.js : 130-132
+    - Y el paso de cada intérprete contiene el código que antes contenía Interprete.paso.
+
+Pendientes menores (son sólo copypaste de AelE):
+* (a) Recuperar la sesión anterior al recargar la página (para debuggear más rápido).
+  -> src/blockly.js : 26-29 + 30-36
+* (b) Guardar y cargar archivos.
+  -> src/blockly.js : generarXml y cargarDesdeXml
+  -> src/blockly.js : exportar e importar
+* (c) Iniciar con un bloque "Main" que no se pueda duplicar ni eliminar.
+  -> src/blockly.js : crearBloqueInicial
+  -> Ver lo de recordUndo y agrupar.
+* (d) Agregar un warning si un bloque está suelto y no debería estarlo.
+  -> ¿Y que no se pueda ejecutar si hay advertencias en los bloques?
+* (e) Agregar los bloques de procedimientos al workspace
+  -> src/juegos/demo/toolbox.js
+  -> ver el registerToolboxCategoryCallback
+
+Otros pendientes:
+* (5) Hacer el bloque "Main" para definir el comportamiento de cada rol.
+* (6) Integrar el clock (ver pendiente 3).
+* (7) Definir: Si el bloque "Derecha" cambia el estado a "Moviendo a la derecha",
+  ¿cuándo se vuelve a asignar el estado IDLE? Supongo que debería ser parte del intérprete.
+* (8) Revisar por qué ahora sólo se iluminan los bloques de direcciones.
+  -> Hacerlo tras el pendiente 6, por si cambia algo.
+
+Notas:
+* Le saqué el campo "robot" al objeto que representa al intérprete ya que parece que no hace falta.
+* No comitié lo que le agregué al generador para que los bloques de expresiones se iluminen:
+  for (B of ['math_number', 'logic_boolean']) {
+    const tmp = Mila.generador[B];
+    Mila.generador[B] = function(bloque){
+      let rec = tmp(bloque);
+      rec[0] = "(iluminar('"+bloque.id+"')||"+rec[0]+")"
+      return rec;
+    };
+  }
+  -> Quizás sea mejor sobreescribir la función Mila.generador.valueToCode:
+  valueToCode() {
+    llamar a Blockly.Generator.prototype.valueToCode
+    devolver el resultado de eso con un "iluminar" adelante
+  }
+* No comitié la actualización del finish del generador.
+  -> Tras el pendiente (d), no va a hacer falta.
+
+Obsoletos:
+  "De paso, mejorar la función de mover para que no entre al switch cada vez"
+  -> Tras el pendiente 1, la función que efectúe el movimiento sí va a tener que checkear el estado cada vez.
+  "Alternativa para arreglar lo de veces en el mover: Que al terminar sea el robot el que llame al intérprete"
+  -> Tras el pendiente 6 se va a solucionar sólo (creo, ver pendiente 7).
+
+Más:
+  * Física de colisiones
+  * Física de (empujar cosas o reducir la velocidad al chocar)
+  * Para dos jugadores necesitamos dos workspaces (el segundo puede estar oculto pero lo necesitamos para convertir los bloques a código)
+  D Eliminar código repetido en Interprete.nuevo
+  D Botones adaptables
+    - Usar textos variables que cambien con el idioma en los botones
+    - Cambiar funcionalidad o mostrar/ocultar según el estado
+      - separar "detener" y "reiniciar"
+  D Agregar un link al repo ("reportar un bug")
+  - Y ya que estamos, link a la página y al resto de las redes
+  - Y ya que estamos, editar la página agregándole links a las redes
+
+Apéndice: Sobre cómo integrar el clock:
+  Controlar velocidad de ejecución: La distancia que te hace avanzar un "Derecha" debería ser siempre la misma.
+    - Independiente de la velocidad del procesador
+      - Si es muy lento puede que se ejecuten menos llamados al "mover" antes de que el intérprete ejecute la próxima instrucción
+        - Posible solución: que el "mover" se ejecute n veces y luego vuelva a encender al intérprete.
+    - Independiente de la resolución de la pantalla.
+      - Problema similar al anterior: a mayor resolución tarda más.
+    + Posible solución: mantener la distancia total y el tiempo total de cada instrucción y
+
+    |  |  |  |  |  |
+    1  1  1  1  1  1
+                    6
+    |    |    |    |
+    1.5 1.5   1.5  1.5
+
+      - En base al timeout del interval, determinar cuánto se tiene que mover en cada llamado.
+      - En base a la resolución determinar los píxeles pero mantener la posición en otra unidad genérica.
+      - En base a la "velocidad de reproducción" (ojo con esto, puede romper todo si no es múltiplo del timeout) ...
+        (!) En lugar de guardarse la "velocidad", guardarse el "tiempo_que_demora_una_unidad_de_tiempo"
+          -> Hay mínimo (una unidad de tiempo = 10ms)
+      - En definitiva, tratar "el escenario real" y "lo que muestra la pantalla" como módulos aislados.
+        - Que la pantalla tenga su propio "clock" fijo para actualizar la pantalla cada x ms.
+            tiempoTranscurrido += PERIODO=1
+            tiempoDelMover ++;
+            if (tiempoDelMover==5) {TERMINÓ}
+        - Que el juego tenga otro "clock" para actualizar posiciones, relativo a la velocidad de los intérpretes.
+          (o que los intérpretes llamaen al juego para alterar el "estado" y el juego mueve a todos los robots en cada clock en base al estado)
+            (obviamente, el clock del juego tiene que ser más rápido que los intérpretes)
